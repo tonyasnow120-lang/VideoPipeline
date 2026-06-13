@@ -63,6 +63,39 @@ Notes:
 - Python must be installed and on PATH. (This launcher does not bundle Python.)
 - You can also launch it from a terminal with `python desktop.py`.
 
+## Standalone .exe (no Python required)
+
+Package everything — Python, the server, and the dashboard — into a single
+clickable `FacelessAI.exe`. **Build it on Windows**: PyInstaller does not
+cross-compile, so the executable must be produced on the OS it will run on.
+
+```bat
+build_exe.bat
+```
+
+This installs the build dependencies and runs PyInstaller against
+`FacelessAI.spec`, producing `dist\FacelessAI.exe`. Double-click that file to
+launch the app — end users do not need Python installed.
+
+What's bundled vs. external:
+- **Bundled**: the web app, server, dashboard, and any optional provider
+  packages (Gemini / OpenAI / ElevenLabs) that are installed in the build
+  environment. To include those, uncomment the `requirements-optional.txt`
+  line in `build_exe.bat` (or `pip install` it) before building. The local
+  **Kokoro** voice is bundled only if `kokoro` is installed before building,
+  which makes the executable several GB larger.
+- **External** (must be present on the user's machine, as with any install):
+  `ffmpeg` on PATH, and — if used — Ollama and AUTOMATIC1111.
+- Generated videos and the database are written to a `data\` folder created
+  next to `FacelessAI.exe`; add background music under `assets\music\` next to
+  the exe.
+
+Customization:
+- Set an icon: edit `FacelessAI.spec` and change `icon=None` to
+  `icon="icon.ico"`.
+- Debug a launch failure: set `console=False` to `console=True` in
+  `FacelessAI.spec` and rebuild to see a console window with errors.
+
 ## First Steps
 1. Go to **Settings** → configure your providers
 2. Click **Refresh Status** to verify connections

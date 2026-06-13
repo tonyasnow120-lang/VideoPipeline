@@ -4,6 +4,7 @@ Starts the FastAPI server in-process on a background thread and opens the
 dashboard in a native desktop window via pywebview. Double-click the bundled
 ``FacelessAI.bat`` (Windows) to run it.
 """
+import os
 import socket
 import threading
 import time
@@ -44,14 +45,29 @@ class _ServerThread:
         self.thread.start()
 
 
-def main():
-    import webview  # imported lazily so the rest is testable without a display
-
+def _start_server_if_needed():
     # If a server is already listening (e.g. launched separately), reuse it.
     if not _port_open(HOST, PORT):
         _ServerThread().start()
         if not _wait_for_server():
             raise RuntimeError(f"FacelessAI server did not start at {URL}")
+
+
+def main():
+    # Headless mode: boot the server, confirm it serves, then exit. Used to
+    # smoke-test a packaged build on a machine with no display.
+    if os.environ.get("FACELESSAI_HEADLESS"):
+        import urllib.request
+
+        _start_server_if_needed()
+        with urllib.request.urlopen(URL, timeout=5) as r:
+            assert r.status == 200, f"unexpected status {r.status}"
+        print("FacelessAI headless check OK")
+        return
+
+    import webview  # imported lazily so the rest is testable without a display
+
+    _start_server_if_needed()
 
     webview.create_window(
         "FacelessAI",

@@ -1,10 +1,24 @@
+import sys
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent.parent
-DATA_DIR = BASE_DIR / "data"
+FROZEN = getattr(sys, "frozen", False)
+
+if FROZEN:
+    # PyInstaller: read-only bundled resources live under sys._MEIPASS, while
+    # writable data/assets sit next to the executable so they persist between runs.
+    BUNDLE_DIR = Path(getattr(sys, "_MEIPASS", Path(sys.executable).parent))
+    APP_DIR = Path(sys.executable).parent
+    FRONTEND_DIR = BUNDLE_DIR / "frontend"
+    DATA_DIR = APP_DIR / "data"
+    ASSETS_DIR = APP_DIR / "assets"
+else:
+    BASE_DIR = Path(__file__).parent.parent
+    FRONTEND_DIR = BASE_DIR / "frontend"
+    DATA_DIR = BASE_DIR / "data"
+    ASSETS_DIR = BASE_DIR / "assets"
+
 OUTPUTS_DIR = DATA_DIR / "outputs"
 WORKSPACE_DIR = DATA_DIR / "workspace"
-ASSETS_DIR = BASE_DIR / "assets"
 MUSIC_DIR = ASSETS_DIR / "music"
 DB_PATH = DATA_DIR / "faceless.db"
 DATABASE_URL = f"sqlite:///{DB_PATH}"

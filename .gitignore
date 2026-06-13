@@ -7,6 +7,10 @@ venv/
 # Runtime data (auto-created)
 data/
 
+# PyInstaller build artifacts
+build/
+dist/
+
 # Keep the music folder but ignore user-supplied tracks
 assets/music/*
 !assets/music/.gitkeep
