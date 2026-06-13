@@ -1,0 +1,4 @@
+# Native desktop window launcher (run via desktop.py / FacelessAI.bat)
+# On Windows, pywebview uses the Edge WebView2 runtime (preinstalled on
+# Windows 11; on Windows 10 install it from https://developer.microsoft.com/microsoft-edge/webview2/).
+pywebview>=5.0

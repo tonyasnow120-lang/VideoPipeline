@@ -41,6 +41,28 @@ Optional paid/alternative providers (ElevenLabs, OpenAI, Gemini):
 pip install -r requirements-optional.txt
 ```
 
+## Desktop App (Windows)
+
+Run the dashboard in a native desktop window instead of a browser tab — no
+terminal needed after setup.
+
+```bash
+pip install -r requirements-desktop.txt
+```
+
+Then **double-click `FacelessAI.bat`**. It starts the server in the background
+and opens the dashboard in a native window. To make it feel like a real app,
+right-click `FacelessAI.bat` → **Create shortcut**, then move the shortcut to
+your Desktop or Start Menu (and optionally set a custom icon via the shortcut's
+Properties → Change Icon).
+
+Notes:
+- pywebview uses the **Edge WebView2** runtime. It's preinstalled on Windows 11;
+  on Windows 10 install it from
+  https://developer.microsoft.com/microsoft-edge/webview2/.
+- Python must be installed and on PATH. (This launcher does not bundle Python.)
+- You can also launch it from a terminal with `python desktop.py`.
+
 ## First Steps
 1. Go to **Settings** → configure your providers
 2. Click **Refresh Status** to verify connections
