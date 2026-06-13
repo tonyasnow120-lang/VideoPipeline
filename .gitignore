@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Runtime data (auto-created)
+data/
+
+# Keep the music folder but ignore user-supplied tracks
+assets/music/*
+!assets/music/.gitkeep
+
+.DS_Store
