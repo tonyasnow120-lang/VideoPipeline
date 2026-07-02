@@ -31,7 +31,30 @@ npm install
 cp .env.example .env      # then paste your real OPENAI_API_KEY
 ```
 
-## Use it
+## Easiest way: the GUI
+
+```bash
+npm run gui
+```
+
+Open **http://localhost:4000**. The dashboard walks you through the whole
+pipeline with no terminal or code editing:
+
+1. **Upload** your video (saved as `public/source.mp4`) and any music/SFX/ad files
+2. **Transcribe** with one click
+3. **Find moments** — search for a phrase, or click words in the transcript to
+   select a time range
+4. **Graphics** — add/edit graphics with forms; “Use selection” copies the
+   timestamps from step 3
+5. **Music, SFX & ad breaks** — simple form fields
+6. **Preview** — launches Remotion Studio (http://localhost:3000); saving in
+   the GUI hot-reloads it
+7. **Render** — one click, then download `video.mp4`
+
+The GUI reads and writes `src/data/*.json` — the same files Studio uses — so
+you can mix GUI editing and hand editing freely.
+
+## Same thing from the command line
 
 ### 1. Add your video and transcribe
 
@@ -55,8 +78,8 @@ npm run find -- "the process"
 #    start 2.14s  →  end 2.73s
 ```
 
-Then edit **`src/data/graphics.ts`** — add a cue with `start`/`end` (seconds)
-and the graphic's content. Everything is type-checked. Built-in graphics:
+Then edit **`src/data/graphics.json`** — add a cue with `start`/`end` (seconds)
+and the graphic's content. Built-in graphics:
 
 | `type`        | Component          | Props | Style |
 |---------------|--------------------|-------|-------|
@@ -73,7 +96,7 @@ npm run studio
 ```
 
 Opens Remotion Studio (http://localhost:3000). Scrub the timeline, watch each
-graphic land, and adjust timing/content in `src/data/graphics.ts` — it hot-reloads.
+graphic land, and adjust timing/content in `src/data/graphics.json` — it hot-reloads.
 Dimensions and duration come from the source video, so 16:9 and 9:16 both work
 automatically.
 
@@ -85,31 +108,30 @@ npm run render                   # → out/video.mp4
 
 ## Background music & sound effects
 
-Configured in **`src/data/audio.ts`**; files go in `public/`.
+Configured in **`src/data/audio.json`** (via the GUI or by hand); files go in
+`public/`.
 
-```ts
-// Low-volume bed under the whole video, with fade in/out (loops if shorter):
-export const backgroundMusic = { src: "music-lofi.mp3", volume: 0.12 };
-
-// One-shot SFX — set `at` to a graphic's `start` to sync with its animation:
-export const soundEffects: SoundEffect[] = [
-  { src: "whoosh.mp3", at: 2, volume: 0.8 },
-];
+```json
+{
+  "backgroundMusic": { "src": "music-lofi.mp3", "volume": 0.12 },
+  "soundEffects": [{ "src": "whoosh.mp3", "at": 2, "volume": 0.8 }]
+}
 ```
+
+Music loops under the whole video with a fade in/out. For SFX, set `at` to a
+graphic's `start` to sync with its animation.
 
 SFX timestamps use source time (same clock as graphics), so they stay synced
 even when ad breaks shift the timeline.
 
 ## Ad insertion
 
-Configured in **`src/data/ads.ts`**. An ad break *splices* a clip into the
-timeline at a natural pause — everything after it (footage, graphics, SFX)
-shifts later automatically.
+Configured in **`src/data/ads.json`** (via the GUI or by hand). An ad break
+*splices* a clip into the timeline at a natural pause — everything after it
+(footage, graphics, SFX) shifts later automatically.
 
-```ts
-export const adBreaks: AdBreak[] = [
-  { at: 45, src: "ad-sponsor.mp4", durationInSeconds: 12, label: "Sponsored" },
-];
+```json
+[{ "at": 45, "src": "ad-sponsor.mp4", "durationInSeconds": 12, "label": "Sponsored" }]
 ```
 
 - `at` is seconds into the *source* video — pick a sentence boundary
@@ -124,7 +146,8 @@ export const adBreaks: AdBreak[] = [
    skip the backdrop for an overlay like `LowerThird.tsx`.
 2. Register it in `src/graphics/registry.ts` (add to `graphicRegistry` and
    `GraphicPropsMap`).
-3. Use `type: "myGraphic"` in `src/data/graphics.ts`.
+3. Use `type: "myGraphic"` in `src/data/graphics.json`. (To make it editable
+   in the GUI too, add a matching entry to `GRAPHIC_DEFS` in `gui/index.html`.)
 
 Shared branding lives in `src/theme.ts` — change it once, everything follows.
 
@@ -132,6 +155,9 @@ Shared branding lives in `src/theme.ts` — change it once, everything follows.
 
 ```
 remotion/
+├── gui/
+│   ├── server.mjs          # npm run gui → dashboard at localhost:4000
+│   └── index.html          # the dashboard UI
 ├── scripts/
 │   ├── transcribe.mjs      # FFmpeg + Whisper → transcript.json
 │   └── find-phrase.mjs     # locate a phrase's timestamp
@@ -145,9 +171,9 @@ remotion/
 │   ├── graphics/           # reusable graphic components + registry
 │   │   └── Backdrop.tsx    # dimmed backdrop for takeover graphics
 │   └── data/
-│       ├── graphics.ts     # ← your timeline of graphics
-│       ├── audio.ts        # ← background music + sound effects
-│       ├── ads.ts          # ← ad breaks spliced at natural pauses
+│       ├── graphics.json   # ← your timeline of graphics (GUI-editable)
+│       ├── audio.json      # ← background music + sound effects (GUI-editable)
+│       ├── ads.json        # ← ad breaks spliced at natural pauses (GUI-editable)
 │       ├── timeline.ts     # splices ads, maps source→composition time
 │       └── transcript.json # generated by transcribe
 └── public/                 # source.mp4, music, sfx, ad clips

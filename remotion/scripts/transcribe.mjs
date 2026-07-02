@@ -13,13 +13,26 @@
  * saying the thing it illustrates.
  */
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, writeFileSync, createReadStream } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, createReadStream } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import OpenAI from "openai";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
+
+// Load remotion/.env if present (no dotenv dependency; works on any Node 18+).
+try {
+  const envFile = readFileSync(resolve(root, ".env"), "utf8");
+  for (const line of envFile.split("\n")) {
+    const m = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/);
+    if (m && !(m[1] in process.env)) {
+      process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
+    }
+  }
+} catch {
+  // no .env — fine, the key may be exported in the shell
+}
 
 const videoArg = process.argv[2] ?? "public/source.mp4";
 const videoPath = resolve(root, videoArg);

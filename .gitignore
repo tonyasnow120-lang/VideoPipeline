@@ -4,8 +4,9 @@ __pycache__/
 .venv/
 venv/
 
-# Runtime data (auto-created)
-data/
+# Runtime data (auto-created by FacelessAI at the repo root; anchored so it
+# doesn't swallow remotion/src/data/)
+/data/
 
 # PyInstaller build artifacts
 build/

@@ -1,0 +1,42 @@
+[
+  {
+    "type": "bulletList",
+    "start": 2,
+    "end": 7,
+    "props": {
+      "title": "The Process",
+      "items": ["Transcribe", "Map graphics to speech", "Build", "Preview", "Render"]
+    }
+  },
+  {
+    "type": "stat",
+    "start": 8,
+    "end": 12,
+    "props": { "value": "30fps", "label": "every frame is a React component" }
+  },
+  {
+    "type": "comparison",
+    "start": 13,
+    "end": 19,
+    "props": {
+      "title": "Landscape vs. Vertical",
+      "left": { "heading": "16:9", "points": ["YouTube", "Desktop", "Widescreen"] },
+      "right": { "heading": "9:16", "points": ["Shorts", "Reels", "TikTok"] }
+    }
+  },
+  {
+    "type": "processFlow",
+    "start": 20,
+    "end": 26,
+    "props": {
+      "title": "How it renders",
+      "steps": ["Transcribe", "Map", "Build", "Render"]
+    }
+  },
+  {
+    "type": "lowerThird",
+    "start": 27,
+    "end": 31,
+    "props": { "title": "Your Name", "subtitle": "What you do" }
+  }
+]
