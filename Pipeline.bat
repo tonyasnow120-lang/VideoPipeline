@@ -12,6 +12,15 @@ if errorlevel 1 (
     exit /b 1
 )
 
+for /f "tokens=1 delims=." %%v in ('node -v') do set NODEMAJOR=%%v
+set NODEMAJOR=%NODEMAJOR:v=%
+if %NODEMAJOR% LSS 18 (
+    echo Your Node.js version is too old ^(need 18 or newer^).
+    echo Install the current version from https://nodejs.org and run this again.
+    pause
+    exit /b 1
+)
+
 where ffmpeg >nul 2>nul
 if errorlevel 1 (
     echo NOTE: ffmpeg was not found on PATH. Transcription will not work

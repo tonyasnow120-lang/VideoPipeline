@@ -184,6 +184,24 @@ app.get("/api/download", (_req, res) => {
   res.download(outFile);
 });
 
+app.get("/favicon.ico", (_req, res) => res.status(204).end());
+
+// Return errors as JSON the dashboard can show (instead of an HTML stack),
+// with hints for the failure modes we know about.
+app.use((err, _req, res, _next) => {
+  console.error(`[gui] ${err.code ?? ""} ${err.message}`);
+  let hint = "";
+  if (err.code === "EBUSY" || err.code === "EPERM" || err.code === "EACCES") {
+    hint =
+      " — the file or folder is locked or protected. Close Remotion Studio and any video player using source.mp4, make sure the repo isn't in a protected folder (like Program Files), then retry.";
+  } else if (err.code === "LIMIT_FILE_SIZE") {
+    hint = " — the file is over the 4 GB upload limit.";
+  } else if (err.code === "ENOSPC") {
+    hint = " — the disk is full.";
+  }
+  res.status(err.status || 500).json({ error: `${err.message}${hint}` });
+});
+
 // Clean up the Studio child when the GUI server is stopped.
 for (const sig of ["SIGINT", "SIGTERM"]) {
   process.on(sig, () => {
