@@ -13,11 +13,11 @@
  * saying the thing it illustrates.
  */
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync, createReadStream } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import OpenAI from "openai";
+import OpenAI, { toFile } from "openai";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
@@ -154,8 +154,11 @@ console.log("→ Transcribing with OpenAI Whisper (word timestamps)…");
 const openai = new OpenAI({ maxRetries: 4, timeout: 10 * 60 * 1000 });
 let result;
 try {
+  // Buffer the whole file so the request has a fixed Content-Length instead
+  // of a chunked stream — chunked uploads get reset (ECONNRESET) by some
+  // antivirus/router middleboxes that pass ordinary requests fine.
   result = await openai.audio.transcriptions.create({
-    file: createReadStream(audioPath),
+    file: await toFile(readFileSync(audioPath), "audio.mp3", { type: "audio/mpeg" }),
     model: "whisper-1",
     response_format: "verbose_json",
     timestamp_granularities: ["word"],
