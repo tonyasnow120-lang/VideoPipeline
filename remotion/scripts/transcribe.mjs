@@ -86,9 +86,65 @@ try {
 }
 console.log(`  audio → public/audio.mp3`);
 
+// --- Preflight: can we reach the OpenAI API at all? -------------------------
+// "Connection error." from the SDK hides the real cause, so check first and
+// report something actionable.
+function describeError(err) {
+  const parts = [];
+  let e = err;
+  while (e && parts.length < 5) {
+    parts.push([e.code, e.message || String(e)].filter(Boolean).join(" — "));
+    e = e.cause;
+  }
+  return parts.join("\n      caused by: ");
+}
+
+console.log("→ Checking connection to api.openai.com…");
+try {
+  const resp = await fetch("https://api.openai.com/v1/models", {
+    headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
+    signal: AbortSignal.timeout(20000),
+  });
+  if (resp.status === 401) {
+    fail(
+      "Your OpenAI API key was rejected (401).\n" +
+        "  Open remotion/.env and check the key: it should start with sk-,\n" +
+        "  with no quotes, spaces, or line breaks. Create a new key at\n" +
+        "  https://platform.openai.com/api-keys if needed."
+    );
+  }
+  if (resp.status === 403) {
+    console.log(
+      "  ⚠ the API answered 403 — OpenAI may not be available in your country/region,\n" +
+        "    or a proxy is interfering. If the next step fails, that's why."
+    );
+  }
+  if (resp.status === 429) {
+    console.log(
+      "  ⚠ your account is rate-limited or out of credit (429) — if the next step\n" +
+        "    fails, add credit at https://platform.openai.com/settings/organization/billing"
+    );
+  }
+  console.log("  connection OK");
+} catch (err) {
+  fail(
+    "Cannot reach api.openai.com — this is a network problem on this computer,\n" +
+      "  not an API key problem.\n" +
+      `  Details: ${describeError(err)}\n` +
+      "  Common fixes, in order of likelihood:\n" +
+      "   1. Antivirus \"web protection\" blocking Node.js — allow node.exe, or turn\n" +
+      "      off HTTPS/SSL scanning, then retry\n" +
+      "   2. Using a VPN? Toggle it (OpenAI also requires a supported country)\n" +
+      "   3. Firewall blocking outbound connections from Node.js\n" +
+      "   4. Sanity check: open https://api.openai.com/v1/models in your browser —\n" +
+      "      a JSON error page is GOOD (the API is reachable); no page at all means\n" +
+      "      your network is blocking it"
+  );
+}
+
 // --- Whisper: transcribe with word-level timestamps ------------------------
 console.log("→ Transcribing with OpenAI Whisper (word timestamps)…");
-const openai = new OpenAI();
+const openai = new OpenAI({ maxRetries: 4, timeout: 10 * 60 * 1000 });
 let result;
 try {
   result = await openai.audio.transcriptions.create({
@@ -98,7 +154,7 @@ try {
     timestamp_granularities: ["word"],
   });
 } catch (err) {
-  fail(`Whisper request failed: ${err?.message ?? err}`);
+  fail(`Whisper request failed: ${describeError(err)}`);
 }
 
 const words = (result.words ?? []).map((w) => ({
@@ -119,5 +175,5 @@ writeFileSync(
 
 console.log(`\n✓ ${words.length} words → src/data/transcript.json`);
 console.log(`  Full text length: ${result.text.length} chars`);
-console.log(`\nNext: run "npm run find -- \\"your phrase\\"" to get timestamps,`);
-console.log(`then add graphics in src/data/graphics.ts and "npm run studio".`);
+console.log(`\nNext: find your moments (step 3 in the GUI, or "npm run find -- \\"your phrase\\""),`);
+console.log(`then add graphics (step 4 in the GUI, or edit src/data/graphics.json).`);
