@@ -48,6 +48,13 @@ function fail(msg) {
 if (!process.env.OPENAI_API_KEY) {
   fail("OPENAI_API_KEY is not set. Add it to remotion/.env or export it.");
 }
+if (/your-key-here|sk-xxxx|YOUR_API_KEY/i.test(process.env.OPENAI_API_KEY)) {
+  fail(
+    "remotion/.env still contains the example placeholder, not a real key.\n" +
+      "  Open remotion/.env in Notepad and replace everything after OPENAI_API_KEY=\n" +
+      "  with your actual key from https://platform.openai.com/api-keys"
+  );
+}
 if (!existsSync(videoPath)) {
   fail(`Source video not found: ${videoPath}\nPut your video in remotion/public/ or pass a path.`);
 }
@@ -99,7 +106,7 @@ function describeError(err) {
   return parts.join("\n      caused by: ");
 }
 
-console.log("→ Checking connection to api.openai.com…");
+console.log(`→ Checking connection to api.openai.com… (Node ${process.version})`);
 try {
   const resp = await fetch("https://api.openai.com/v1/models", {
     headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
