@@ -33,6 +33,13 @@ cp .env.example .env      # then paste your real OPENAI_API_KEY
 
 ## Easiest way: the GUI
 
+**Windows:** just double-click **`Pipeline.bat`** in the repo root. It checks
+for Node/FFmpeg, installs dependencies on first run, prompts for your API key
+if `.env` doesn't exist yet, then starts the dashboard and opens your browser.
+(Right-click → Create shortcut to put it on your Desktop.)
+
+**Mac/Linux (or any terminal):**
+
 ```bash
 npm run gui
 ```

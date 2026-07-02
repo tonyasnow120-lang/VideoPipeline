@@ -193,5 +193,18 @@ for (const sig of ["SIGINT", "SIGTERM"]) {
 }
 
 app.listen(PORT, "127.0.0.1", () => {
-  console.log(`\n  🎬 Pipeline GUI → http://localhost:${PORT}\n`);
+  const url = `http://localhost:${PORT}`;
+  console.log(`\n  🎬 Pipeline GUI → ${url}\n`);
+  // --open: launch the default browser (used by the Pipeline.bat launcher).
+  if (process.argv.includes("--open")) {
+    const [cmd, args] =
+      process.platform === "win32"
+        ? ["cmd", ["/c", "start", "", url]]
+        : process.platform === "darwin"
+          ? ["open", [url]]
+          : ["xdg-open", [url]];
+    spawn(cmd, args, { stdio: "ignore", detached: true })
+      .on("error", () => console.log(`  (couldn't open a browser — visit ${url} yourself)`))
+      .unref();
+  }
 });
