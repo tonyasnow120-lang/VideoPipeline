@@ -1,0 +1,25 @@
+{
+  "name": "video-graphics-pipeline",
+  "version": "1.0.0",
+  "description": "Overlay animated graphics on talking-head videos using Remotion + FFmpeg + OpenAI Whisper word-level timestamps.",
+  "type": "module",
+  "scripts": {
+    "transcribe": "node --env-file-if-exists=.env scripts/transcribe.mjs",
+    "find": "node scripts/find-phrase.mjs",
+    "studio": "remotion studio",
+    "render": "remotion render EditedVideo out/video.mp4",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "@remotion/media-utils": "^4.0.0",
+    "openai": "^4.67.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.1",
+    "typescript": "^5.5.4"
+  }
+}

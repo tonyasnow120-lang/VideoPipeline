@@ -1,0 +1,6 @@
+node_modules/
+.env
+out/
+public/audio.mp3
+public/source.*
+src/data/transcript.json

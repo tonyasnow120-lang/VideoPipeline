@@ -1,0 +1,2 @@
+# Put your source video here as source.mp4 (or pass a path to `npm run transcribe`).
+# The rendered output goes to remotion/out/.
