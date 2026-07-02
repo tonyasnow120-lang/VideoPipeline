@@ -1,6 +1,12 @@
 node_modules/
 .env
 out/
+build/
 public/audio.mp3
 public/source.*
+# User-supplied media assets (music, sfx, ad clips)
+public/*.mp3
+public/*.wav
+public/*.mov
+public/ad-*.mp4
 src/data/transcript.json

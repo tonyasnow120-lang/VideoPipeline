@@ -1,5 +1,6 @@
 import React from "react";
 import { spring, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
+import { Backdrop } from "./Backdrop";
 import { theme } from "../theme";
 
 export type ComparisonCardProps = {
@@ -64,6 +65,7 @@ export const ComparisonCard: React.FC<ComparisonCardProps> = ({ title, left, rig
   const progress = spring({ frame, fps, config: { damping: 200 } });
 
   return (
+    <Backdrop>
     <div
       style={{
         width: "100%",
@@ -94,5 +96,6 @@ export const ComparisonCard: React.FC<ComparisonCardProps> = ({ title, left, rig
         <Column heading={right.heading} points={right.points} accent={theme.good} progress={progress} dir={1} />
       </div>
     </div>
+    </Backdrop>
   );
 };

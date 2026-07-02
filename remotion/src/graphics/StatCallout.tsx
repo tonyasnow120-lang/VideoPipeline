@@ -1,5 +1,6 @@
 import React from "react";
 import { spring, useCurrentFrame, useVideoConfig, interpolate } from "remotion";
+import { Backdrop } from "./Backdrop";
 import { theme } from "../theme";
 
 export type StatCalloutProps = {
@@ -14,6 +15,7 @@ export const StatCallout: React.FC<StatCalloutProps> = ({ value, label }) => {
   const pop = spring({ frame, fps, config: { damping: 12, mass: 0.6 } });
 
   return (
+    <Backdrop>
     <div
       style={{
         width: "100%",
@@ -45,5 +47,6 @@ export const StatCallout: React.FC<StatCalloutProps> = ({ value, label }) => {
         </div>
       </div>
     </div>
+    </Backdrop>
   );
 };

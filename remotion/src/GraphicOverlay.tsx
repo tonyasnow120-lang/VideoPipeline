@@ -1,12 +1,11 @@
 import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import { theme } from "./theme";
 
 /**
- * Wraps every graphic with a consistent dimmed backdrop + fade in/out, so
- * individual graphic components only worry about their own content.
- * A graphic lives inside a <Sequence>, so `useCurrentFrame` here is 0 at the
- * moment the graphic appears and counts up over its lifetime.
+ * Wraps every graphic with a consistent fade in/out. A graphic lives inside a
+ * <Sequence>, so `useCurrentFrame` here is 0 at the moment the graphic appears
+ * and counts up over its lifetime. The dimmed backdrop (for takeover graphics)
+ * lives in Backdrop.tsx, so overlay graphics like a lower third can skip it.
  */
 export const GraphicOverlay: React.FC<{
   durationInFrames: number;
@@ -23,9 +22,5 @@ export const GraphicOverlay: React.FC<{
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
   );
 
-  return (
-    <AbsoluteFill style={{ opacity, background: theme.bg, backdropFilter: "blur(6px)" }}>
-      {children}
-    </AbsoluteFill>
-  );
+  return <AbsoluteFill style={{ opacity }}>{children}</AbsoluteFill>;
 };

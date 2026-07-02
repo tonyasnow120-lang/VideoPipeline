@@ -1,5 +1,7 @@
 import { BulletList, BulletListProps } from "./BulletList";
 import { ComparisonCard, ComparisonCardProps } from "./ComparisonCard";
+import { LowerThird, LowerThirdProps } from "./LowerThird";
+import { ProcessFlow, ProcessFlowProps } from "./ProcessFlow";
 import { StatCallout, StatCalloutProps } from "./StatCallout";
 
 /**
@@ -10,6 +12,8 @@ export const graphicRegistry = {
   bulletList: BulletList,
   comparison: ComparisonCard,
   stat: StatCallout,
+  processFlow: ProcessFlow,
+  lowerThird: LowerThird,
 } as const;
 
 export type GraphicType = keyof typeof graphicRegistry;
@@ -19,4 +23,6 @@ export type GraphicPropsMap = {
   bulletList: BulletListProps;
   comparison: ComparisonCardProps;
   stat: StatCalloutProps;
+  processFlow: ProcessFlowProps;
+  lowerThird: LowerThirdProps;
 };

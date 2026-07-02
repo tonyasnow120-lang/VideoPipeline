@@ -1,5 +1,6 @@
 import React from "react";
 import { interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { Backdrop } from "./Backdrop";
 import { theme } from "../theme";
 
 export type BulletListProps = {
@@ -13,6 +14,7 @@ export const BulletList: React.FC<BulletListProps> = ({ title, items }) => {
   const { fps } = useVideoConfig();
 
   return (
+    <Backdrop>
     <div
       style={{
         width: "100%",
@@ -84,5 +86,6 @@ export const BulletList: React.FC<BulletListProps> = ({ title, items }) => {
         })}
       </div>
     </div>
+    </Backdrop>
   );
 };
