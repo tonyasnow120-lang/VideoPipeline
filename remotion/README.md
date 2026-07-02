@@ -17,11 +17,12 @@ across videos.
 
 ## Prerequisites
 
-- **Node.js 20.6+** (uses `--env-file`; 22+ recommended) — `node -v`
-- **FFmpeg** on your PATH — `ffmpeg -version`
-  - macOS: `brew install ffmpeg` · Debian/Ubuntu: `sudo apt install ffmpeg`
-  - Windows: https://ffmpeg.org/download.html
+- **Node.js 18+** (22 recommended) — `node -v`
 - **OpenAI API key** with Whisper access — https://platform.openai.com/api-keys
+- **FFmpeg** — bundled automatically: `npm install` downloads a copy via
+  `ffmpeg-static`, so there's nothing to install. If that download is blocked
+  on your network, install it system-wide instead (`winget install ffmpeg` /
+  `brew install ffmpeg`) and reopen your terminal.
 
 ## Setup
 

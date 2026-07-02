@@ -14,6 +14,7 @@
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, createReadStream } from "node:fs";
+import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import OpenAI from "openai";
@@ -52,15 +53,36 @@ if (!existsSync(videoPath)) {
 }
 
 // --- FFmpeg: extract a mono 16kHz mp3 (small + Whisper-friendly) ------------
+// Prefer the bundled binary from ffmpeg-static (installed by npm install);
+// fall back to a system-wide ffmpeg on PATH.
+let ffmpegBin = "ffmpeg";
+try {
+  const staticPath = createRequire(import.meta.url)("ffmpeg-static");
+  if (staticPath && existsSync(staticPath)) ffmpegBin = staticPath;
+} catch {
+  // ffmpeg-static not installed (optional dependency) — use system ffmpeg
+}
+
 console.log(`→ Extracting audio from ${videoArg} with FFmpeg…`);
 try {
   execFileSync(
-    "ffmpeg",
+    ffmpegBin,
     ["-y", "-i", videoPath, "-vn", "-ac", "1", "-ar", "16000", "-b:a", "64k", audioPath],
     { stdio: ["ignore", "ignore", "inherit"] }
   );
-} catch {
-  fail("FFmpeg failed. Is it installed and on your PATH? (ffmpeg -version)");
+} catch (err) {
+  if (err?.code === "ENOENT") {
+    fail(
+      "FFmpeg is not installed.\n" +
+        "  Easiest fix: run \"npm install\" in the remotion folder (downloads a bundled FFmpeg), then retry.\n" +
+        "  Or install it system-wide: winget install ffmpeg (Windows) / brew install ffmpeg (Mac),\n" +
+        "  then CLOSE and REOPEN the launcher window so it sees the new PATH."
+    );
+  }
+  fail(
+    "FFmpeg ran but could not extract audio — the video file may be corrupt or in an unsupported format.\n" +
+      "  See FFmpeg's output above for details."
+  );
 }
 console.log(`  audio → public/audio.mp3`);
 

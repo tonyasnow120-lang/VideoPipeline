@@ -21,20 +21,23 @@ if %NODEMAJOR% LSS 18 (
     exit /b 1
 )
 
-where ffmpeg >nul 2>nul
+echo Checking dependencies (first run takes a minute)...
+call npm install --no-audit --no-fund
 if errorlevel 1 (
-    echo NOTE: ffmpeg was not found on PATH. Transcription will not work
-    echo until you install it:  winget install ffmpeg
-    echo.
+    echo npm install failed. See the message above.
+    pause
+    exit /b 1
 )
 
-if not exist node_modules (
-    echo First run - installing dependencies, this takes a minute...
-    call npm install --no-audit --no-fund
+REM FFmpeg comes bundled via npm (ffmpeg-static). Only warn if that download
+REM failed AND there is no system-wide ffmpeg either.
+if not exist node_modules\ffmpeg-static\ffmpeg.exe (
+    where ffmpeg >nul 2>nul
     if errorlevel 1 (
-        echo npm install failed. See the message above.
-        pause
-        exit /b 1
+        echo NOTE: ffmpeg is not available yet. Transcription will not work
+        echo until you install it:  winget install ffmpeg
+        echo Then close this window and run Pipeline.bat again.
+        echo.
     )
 )
 
